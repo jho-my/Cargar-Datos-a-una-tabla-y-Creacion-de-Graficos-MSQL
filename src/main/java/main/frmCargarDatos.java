@@ -3,10 +3,18 @@ package main;
 import Conex.Conexion;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 public class frmCargarDatos extends javax.swing.JFrame {
 
     Conexion conectar = Conexion.getInstancia();
+
+    JFreeChart grafico;
+    DefaultCategoryDataset datos = new DefaultCategoryDataset();
 
     public frmCargarDatos() {
         initComponents();
@@ -29,6 +37,7 @@ public class frmCargarDatos extends javax.swing.JFrame {
             modelo.addColumn("Visitas");
             modelo.addColumn("Negocio");
             modelo.addColumn("Dias");
+
             int columnas = datos.getColumnCount();
 
             int anchos[] = {90, 90, 90};
@@ -53,6 +62,29 @@ public class frmCargarDatos extends javax.swing.JFrame {
         }
     }
 
+    private void graficarDatos() {
+        try {
+            //recorremos cada fila
+            for (int i = 0; i < tblDatos.getRowCount(); i++) {
+                datos.addValue(Integer.parseInt(tblDatos.getValueAt(i, 0).toString()), tblDatos.getValueAt(i, 1).toString(), tblDatos.getValueAt(i, 2).toString());
+            }
+
+            //mostramos los graficos
+            grafico = ChartFactory.createBarChart("Grafico de Visitas",
+                    "Dias", "Visitas", datos, PlotOrientation.VERTICAL,
+                    true, true,
+                    false);
+            ChartPanel panel = new ChartPanel(grafico);
+            this.add(panel);
+            panel.setBounds(300, 40, 700, 350);
+
+        } catch (NumberFormatException e) {
+            System.out.println("""
+                               Error al graficar :
+                                """ + e.getMessage());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -61,6 +93,7 @@ public class frmCargarDatos extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblDatos = new javax.swing.JTable();
         btncargarDatos = new javax.swing.JButton();
+        btncargarDatos1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -92,6 +125,13 @@ public class frmCargarDatos extends javax.swing.JFrame {
             }
         });
 
+        btncargarDatos1.setText("Graficar Datos");
+        btncargarDatos1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncargarDatos1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -99,28 +139,34 @@ public class frmCargarDatos extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(29, 29, 29)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(53, 53, 53)
-                        .addComponent(btncargarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(417, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btncargarDatos1, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btncargarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(704, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(8, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btncargarDatos)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btncargarDatos1)
+                .addGap(28, 28, 28)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(46, 46, 46))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 122, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,6 +180,11 @@ public class frmCargarDatos extends javax.swing.JFrame {
         // TODO add your handling code here:
         cargarDatos();
     }//GEN-LAST:event_btncargarDatosActionPerformed
+
+    private void btncargarDatos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncargarDatos1ActionPerformed
+        // TODO add your handling code here:
+        graficarDatos();
+    }//GEN-LAST:event_btncargarDatos1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -172,6 +223,7 @@ public class frmCargarDatos extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btncargarDatos;
+    private javax.swing.JButton btncargarDatos1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblDatos;
